@@ -12,7 +12,6 @@ export const Subjects: CollectionConfig = {
       required: true,
       unique: true,
     },
-    { label: "Slug", name: "slug", type: "text", unique: true, required: true },
     {
       name: "description",
       type: "textarea",
