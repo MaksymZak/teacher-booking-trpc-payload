@@ -70,6 +70,8 @@ export interface Config {
     users: User;
     media: Media;
     subjects: Subject;
+    reviews: Review;
+    'teacher-profiles': TeacherProfile;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -79,6 +81,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     subjects: SubjectsSelect<false> | SubjectsSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
+    'teacher-profiles': TeacherProfilesSelect<false> | TeacherProfilesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -121,6 +125,10 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  name?: string | null;
+  phone?: string | null;
+  role: 'student' | 'teacher' | 'admin';
+  isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -174,6 +182,60 @@ export interface Subject {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: string;
+  student: string | User;
+  teacher: string | TeacherProfile;
+  rating: number;
+  comment?: string | null;
+  isVerified?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teacher-profiles".
+ */
+export interface TeacherProfile {
+  id: string;
+  user: string | User;
+  city?: string | null;
+  teachingMode: ('online' | 'offline')[];
+  hourlyRate: number;
+  subjects: {
+    subject: string | Subject;
+    description?: string | null;
+    experienceLevel?: ('beginner' | 'intermediate' | 'advanced' | 'expert') | null;
+    id?: string | null;
+  }[];
+  yearsOfExperience: number;
+  biography?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  profileImage?: (string | null) | Media;
+  isVerified?: boolean | null;
+  isActive?: boolean | null;
+  averageRating?: number | null;
+  totalReviews?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -190,6 +252,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'subjects';
         value: string | Subject;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: string | Review;
+      } | null)
+    | ({
+        relationTo: 'teacher-profiles';
+        value: string | TeacherProfile;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -238,6 +308,10 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  role?: T;
+  isActive?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -283,6 +357,46 @@ export interface SubjectsSelect<T extends boolean = true> {
   description?: T;
   category?: T;
   isActive?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  student?: T;
+  teacher?: T;
+  rating?: T;
+  comment?: T;
+  isVerified?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teacher-profiles_select".
+ */
+export interface TeacherProfilesSelect<T extends boolean = true> {
+  user?: T;
+  city?: T;
+  teachingMode?: T;
+  hourlyRate?: T;
+  subjects?:
+    | T
+    | {
+        subject?: T;
+        description?: T;
+        experienceLevel?: T;
+        id?: T;
+      };
+  yearsOfExperience?: T;
+  biography?: T;
+  profileImage?: T;
+  isVerified?: T;
+  isActive?: T;
+  averageRating?: T;
+  totalReviews?: T;
   updatedAt?: T;
   createdAt?: T;
 }

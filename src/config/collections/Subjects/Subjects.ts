@@ -1,5 +1,16 @@
 import type { CollectionConfig } from "payload";
 
+// Simple slugify function
+function slugify(str: string): string {
+  return str
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "")
+    .replace(/\-+/g, "-");
+}
+
 export const Subjects: CollectionConfig = {
   slug: "subjects",
   admin: {
@@ -12,7 +23,25 @@ export const Subjects: CollectionConfig = {
       required: true,
       unique: true,
     },
-    { label: "Slug", name: "slug", type: "text", unique: true, required: true },
+    {
+      name: "slug",
+      type: "text",
+      required: true,
+      unique: true,
+      index: true,
+      admin: {
+        readOnly: true,
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, data }) => {
+            if (value) return value;
+            if (data?.name) return slugify(data.name);
+            return value;
+          },
+        ],
+      },
+    },
     {
       name: "description",
       type: "textarea",
