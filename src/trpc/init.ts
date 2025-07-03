@@ -28,7 +28,7 @@ export const baseProcedure = t.procedure.use(async ({ ctx, next }) => {
     ctx: {
       ...ctx,
       payload,
-      user: user,
+      user: user || null, // Ensure user is always defined
     },
   });
 });
