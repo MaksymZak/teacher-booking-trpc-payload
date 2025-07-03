@@ -31,6 +31,7 @@ import {
 } from "nuqs";
 import { useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function TeachersPage() {
   const trpc = useTRPC();
@@ -141,6 +142,9 @@ export default function TeachersPage() {
     <>
       <Navbar />
       <div className="container mx-auto py-8">
+        <Breadcrumbs
+          items={[{ label: "Teachers", href: "/teachers", isCurrent: true }]}
+        />
         <h1 className="mb-8 text-3xl font-bold">Find Your Perfect Teacher</h1>
 
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">

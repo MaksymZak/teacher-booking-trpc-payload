@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTRPC } from "@/trpc/client";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function TeacherDebugPage() {
   const { id } = useParams();
@@ -51,6 +52,16 @@ export default function TeacherDebugPage() {
 
   return (
     <div className="container mx-auto py-8">
+      <Breadcrumbs
+        items={[
+          { label: "Teachers", href: "/teachers", isCurrent: false },
+          {
+            label: "Teacher Debag View",
+            href: `/teachers/debug/${id}`,
+            isCurrent: true,
+          },
+        ]}
+      />
       <div className="mb-6 flex items-center justify-between">
         <Button variant="outline" onClick={() => router.push("/teachers")}>
           ← Back to Teachers

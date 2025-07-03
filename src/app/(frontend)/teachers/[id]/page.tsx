@@ -16,6 +16,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 export default function TeacherDetailPage() {
   const { id } = useParams();
@@ -61,6 +62,16 @@ export default function TeacherDetailPage() {
   console.log(teacher);
   return (
     <div className="container mx-auto py-8">
+      <Breadcrumbs
+        items={[
+          { label: "Teachers", href: "/teachers", isCurrent: false },
+          {
+            label: "Teacher Details",
+            href: `/teachers/${id}`,
+            isCurrent: true,
+          },
+        ]}
+      />
       <Button
         variant="outline"
         onClick={() => router.push("/teachers")}
