@@ -1,9 +1,9 @@
 import { initTRPC } from "@trpc/server";
 import { getPayload } from "payload";
 import config from "@/payload.config";
-import { headers as getHeaders } from "next/headers.js";
 import { cache } from "react";
 import { User } from "@/payload-types";
+import { getCurrentUser } from "@/lib/auth";
 export const createTRPCContext = cache(async () => {
   /**
    * @see: https://trpc.io/docs/server/context
@@ -25,9 +25,7 @@ export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure.use(async ({ ctx, next }) => {
   const payload = await getPayload({ config });
-  const headers = await getHeaders();
-  const authResult = await payload.auth({ headers });
-  const user = authResult?.user as User;
+  const user = getCurrentUser();
 
   return next({
     ctx: {
