@@ -70,8 +70,6 @@ export interface Config {
     users: User;
     media: Media;
     subjects: Subject;
-    availability: Availability;
-    bookings: Booking;
     reviews: Review;
     'teacher-profiles': TeacherProfile;
     'payload-locked-documents': PayloadLockedDocument;
@@ -83,8 +81,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     subjects: SubjectsSelect<false> | SubjectsSelect<true>;
-    availability: AvailabilitySelect<false> | AvailabilitySelect<true>;
-    bookings: BookingsSelect<false> | BookingsSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     'teacher-profiles': TeacherProfilesSelect<false> | TeacherProfilesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -177,6 +173,7 @@ export interface Media {
 export interface Subject {
   id: string;
   name: string;
+  slug: string;
   description?: string | null;
   category?: ('mathematics' | 'sciences' | 'languages' | 'technology' | 'arts' | 'other') | null;
   isActive?: boolean | null;
@@ -185,18 +182,15 @@ export interface Subject {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "availability".
+ * via the `definition` "reviews".
  */
-export interface Availability {
+export interface Review {
   id: string;
+  student: string | User;
   teacher: string | TeacherProfile;
-  dayOfWeek: 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
-  timeSlots: {
-    startTime: string;
-    endTime: string;
-    isAvailable?: boolean | null;
-    id?: string | null;
-  }[];
+  rating: number;
+  comment?: string | null;
+  isVerified?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -242,42 +236,6 @@ export interface TeacherProfile {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookings".
- */
-export interface Booking {
-  id: string;
-  student: string | User;
-  teacher: string | TeacherProfile;
-  subject: string | Subject;
-  date: string;
-  startTime: string;
-  endTime: string;
-  duration: number;
-  totalPrice: number;
-  teachingMode: 'online' | 'offline';
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  notes?: string | null;
-  meetingLink?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "reviews".
- */
-export interface Review {
-  id: string;
-  student: string | User;
-  teacher: string | TeacherProfile;
-  booking: string | Booking;
-  rating: number;
-  comment?: string | null;
-  isVerified?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -294,14 +252,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'subjects';
         value: string | Subject;
-      } | null)
-    | ({
-        relationTo: 'availability';
-        value: string | Availability;
-      } | null)
-    | ({
-        relationTo: 'bookings';
-        value: string | Booking;
       } | null)
     | ({
         relationTo: 'reviews';
@@ -403,47 +353,10 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface SubjectsSelect<T extends boolean = true> {
   name?: T;
+  slug?: T;
   description?: T;
   category?: T;
   isActive?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "availability_select".
- */
-export interface AvailabilitySelect<T extends boolean = true> {
-  teacher?: T;
-  dayOfWeek?: T;
-  timeSlots?:
-    | T
-    | {
-        startTime?: T;
-        endTime?: T;
-        isAvailable?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "bookings_select".
- */
-export interface BookingsSelect<T extends boolean = true> {
-  student?: T;
-  teacher?: T;
-  subject?: T;
-  date?: T;
-  startTime?: T;
-  endTime?: T;
-  duration?: T;
-  totalPrice?: T;
-  teachingMode?: T;
-  status?: T;
-  notes?: T;
-  meetingLink?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -454,7 +367,6 @@ export interface BookingsSelect<T extends boolean = true> {
 export interface ReviewsSelect<T extends boolean = true> {
   student?: T;
   teacher?: T;
-  booking?: T;
   rating?: T;
   comment?: T;
   isVerified?: T;

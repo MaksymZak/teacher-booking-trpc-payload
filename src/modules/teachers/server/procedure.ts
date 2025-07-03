@@ -100,19 +100,6 @@ export const teachersRouter = createTRPCRouter({
     return teacher;
   }),
 
-  getAvailability: baseProcedure
-    .input(z.string())
-    .query(async ({ ctx, input }) => {
-      const availability = await ctx.payload.find({
-        collection: "availability",
-        where: {
-          teacher: { equals: input },
-        },
-      });
-
-      return availability.docs;
-    }),
-
   getReviews: baseProcedure
     .input(
       z.object({
@@ -135,52 +122,5 @@ export const teachersRouter = createTRPCRouter({
       });
 
       return reviews;
-    }),
-
-  getAvailabilityWithBookings: baseProcedure
-    .input(
-      z.object({
-        teacherId: z.string(),
-        date: z.string().optional(), // YYYY-MM-DD format
-        weekStart: z.string().optional(), // YYYY-MM-DD format for week view
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { teacherId, date, weekStart } = input;
-
-      // Get teacher's weekly availability
-      const availability = await ctx.payload.find({
-        collection: "availability",
-        where: {
-          teacher: { equals: teacherId },
-        },
-      });
-
-      // Get existing bookings for the specified period
-      const bookingWhere: any = {
-        teacher: { equals: teacherId },
-        status: { not_equals: "cancelled" },
-      };
-
-      if (date) {
-        bookingWhere.date = { equals: date };
-      } else if (weekStart) {
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-        bookingWhere.date = {
-          greater_than_equal: weekStart,
-          less_than_equal: weekEnd.toISOString().split("T")[0],
-        };
-      }
-
-      const bookings = await ctx.payload.find({
-        collection: "bookings",
-        where: bookingWhere,
-      });
-
-      return {
-        availability: availability.docs,
-        bookings: bookings.docs,
-      };
     }),
 });

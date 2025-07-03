@@ -1,9 +1,7 @@
 import { initTRPC } from "@trpc/server";
-import { getPayload } from "payload";
-import config from "@/payload.config";
 import { cache } from "react";
-import { User } from "@/payload-types";
 import { getCurrentUser } from "@/lib/auth";
+import { getPayloadClient } from "@/db/client";
 export const createTRPCContext = cache(async () => {
   /**
    * @see: https://trpc.io/docs/server/context
@@ -24,14 +22,14 @@ const t = initTRPC.create({
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure.use(async ({ ctx, next }) => {
-  const payload = await getPayload({ config });
-  const user = getCurrentUser();
+  const payload = await getPayloadClient();
+  const user = await getCurrentUser();
 
   return next({
     ctx: {
       ...ctx,
       payload,
-      user,
+      user, // User will already have an ID if it exists
     },
   });
 });

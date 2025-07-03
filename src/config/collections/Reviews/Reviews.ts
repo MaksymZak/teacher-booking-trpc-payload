@@ -24,12 +24,6 @@ export const Reviews: CollectionConfig = {
       required: true,
     },
     {
-      name: "booking",
-      type: "relationship",
-      relationTo: "bookings",
-      required: true,
-    },
-    {
       name: "rating",
       type: "number",
       required: true,

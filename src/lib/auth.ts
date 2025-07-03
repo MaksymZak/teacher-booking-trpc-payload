@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { getPayloadClient } from "@/db/client";
 import { redirect } from "next/navigation";
 import { TypedUser } from "payload";
+import { User } from "@/payload-types";
 
 export async function getCurrentUser(): Promise<TypedUser | null> {
   try {
@@ -12,7 +13,7 @@ export async function getCurrentUser(): Promise<TypedUser | null> {
       headers: headersList,
     });
 
-    return result.user || null;
+    return result.user;
   } catch (error: unknown) {
     console.error(error);
     return null;
